@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Todos</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+
+            <nav class="col-2 text-bg-secondary">
+            </nav>
+
+            <div class="col-8">
+
+                <main class="container-md">
+                    <h1>Your todos:</h1>
+
+                    <div id="todo-list" class="list-group mb-3">
+
+                    </div>
+
+                    <form id="form-todo-add">
+                        <fieldset>
+                            <legend>form</legend>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="todo-text-form">Your todo text:</label>
+                                    <textarea class="form-control" id="todo-text-form" rows="4"
+                                        placeholder="Write your Tasks here"></textarea>
+                                </div>
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-primary">Add todo to the
+                                        list</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+
+                </main>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
