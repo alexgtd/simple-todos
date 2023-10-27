@@ -20,24 +20,19 @@
                     <h1>Your todos:</h1>
 
                     <div id="todo-list" class="list-group mb-3">
-
                     </div>
 
-                    <form id="form-todo-add">
-                        <fieldset>
-                            <legend>form</legend>
-                            <div class="row">
-                                <div class="col">
-                                    <label for="todo-text-form">Your todo text:</label>
-                                    <textarea class="form-control" id="todo-text-form" rows="4"
-                                        placeholder="Write your Tasks here"></textarea>
-                                </div>
-                                <div class="col-auto">
-                                    <button type="submit" class="btn btn-primary">Add todo to the
-                                        list</button>
-                                </div>
+                    <form id="todo-add-form">
+                        <div class="row align-items-center">
+                            <label for="todo-add-form__textarea">Your todo text:</label>
+                            <div class="col">
+                                <textarea class="form-control" id="todo-add-form__textarea" rows="4"
+                                    placeholder="Write your Tasks here"></textarea>
                             </div>
-                        </fieldset>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary">Add to the list</button>
+                            </div>
+                        </div>
                     </form>
 
                 </main>

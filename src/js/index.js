@@ -1,7 +1,7 @@
 import '../scss/styles.scss';
 
-const todoTextForm = document.getElementById('todo-text-form');
-const todoAddForm = document.getElementById('form-todo-add');
+const todoTextForm = document.getElementById('todo-add-form__textarea');
+const todoAddForm = document.getElementById('todo-add-form');
 const todoList = document.getElementById('todo-list');
 
 function createTodoEditForm() {
@@ -9,10 +9,10 @@ function createTodoEditForm() {
     <form name="todoEditForm" class="p-0 list-group-item">
         <div class="py-2 bg-body-secondary d-flex justify-content-between">
             <div class="ms-2">
-                <button class="btn btn-success">Save</button>
-                <button class="btn btn-secondary">Don't save</button>
+                <button class="todo-edit-form__save-btn btn btn-success">Save</button>
+                <button class="todo-edit-form__close-btn btn btn-secondary">Don't save</button>
             </div>
-            <button class="me-2 btn btn-danger">Delete</button>
+            <button class="todo-edit-form__remove-btn me-2 btn btn-danger">Delete</button>
         </div>
         <textarea rows="5" class="border border-0 form-control"></textarea>
     </form>
@@ -27,24 +27,24 @@ function createTodoItem(todo) {
         <a href="#" data-id="${todo.id}" class="list-group-item list-group-item-action">
             <div class="row">
                 <div class="col d-flex flex-column justify-content-between">
-                    <p class="mb-1">${text}</p>
+                    <p class="todo-item__text mb-1">${text}</p>
                     <small>${todo.date}</small>
                 </div>
 
                 <div class="col-auto d-flex flex-column align-items-end justify-content-between">
-                    <button type="submit" class="mb-1 todo-edit-btn btn btn-primary">Edit</button>
-                    <button type="submit" class="todo-done-btn btn btn-success">Done</button>
+                    <button type="submit" class="todo-item__edit-btn mb-1 btn btn-primary">Edit</button>
+                    <button type="submit" class="todo-item__done-btn btn btn-success">Done</button>
                 </div>
             </div>
         </a>`;
 
     const todoItem = document.createRange().createContextualFragment(html).firstElementChild;
-    todoItem.querySelector('.todo-edit-btn').addEventListener('click', onEditBtnClick);
-    todoItem.querySelector('.todo-done-btn').addEventListener('click', onDoneBtnClick);
+    todoItem.querySelector('.todo-item__edit-btn').addEventListener('click', onEditBtnClick);
+    const doneBtn = todoItem.querySelector('.todo-item__done-btn');
+    doneBtn.addEventListener('click', onDoneBtnClick);
 
     if (todo.isDone) {
         todoItem.classList.add('list-group-item-dark');
-        const doneBtn = todoItem.querySelector('.todo-done-btn');
         doneBtn.textContent = 'Not Done';
         doneBtn.classList.replace('btn-success', 'btn-secondary');
     }
@@ -93,18 +93,18 @@ function onEditBtnClick(e) {
     const formTextArea = editForm.querySelector('textarea');
     formTextArea.value = todo.text;
 
-    editForm.querySelector('.btn-success').addEventListener('click', (e) => {
+    editForm.querySelector('.todo-edit-form__save-btn').addEventListener('click', (e) => {
         e.preventDefault();
         todo.text = formTextArea.value;
         updateTodos();
         const newItem = createTodoItem(todo);
         editForm.replaceWith(newItem);
     });
-    editForm.querySelector('.btn-secondary').addEventListener('click', (e) => {
+    editForm.querySelector('.todo-edit-form__close-btn').addEventListener('click', (e) => {
         e.preventDefault();
         editForm.replaceWith(srcItem);
     });
-    editForm.querySelector('.btn-danger').addEventListener('click', (e) => {
+    editForm.querySelector('.todo-edit-form__remove-btn').addEventListener('click', (e) => {
         e.preventDefault();
         onRemoveBtnClick(e);
     });
