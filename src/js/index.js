@@ -22,26 +22,34 @@ function createTodoEditForm() {
 }
 
 function createTodoItem(todo) {
+    let text = todo.isDone ? `<s>${todo.text}</s>` : todo.text;
     let html = `
         <a href="#" data-id="${todo.id}" class="list-group-item list-group-item-action">
             <div class="row">
                 <div class="col d-flex flex-column justify-content-between">
-                    <p class="mb-1">${todo.text}</p>
+                    <p class="mb-1">${text}</p>
                     <small>${todo.date}</small>
                 </div>
 
                 <div class="col-auto d-flex flex-column align-items-end justify-content-between">
-                    <button type="submit" class="todo-remove-btn btn btn-danger mb-1">X</button>
-                    <button type="submit" class="todo-edit-btn btn btn-secondary">Edit</button>
+                    <button type="submit" class="mb-1 todo-edit-btn btn btn-primary">Edit</button>
+                    <button type="submit" class="todo-done-btn btn btn-success">Done</button>
                 </div>
             </div>
         </a>`;
 
-    const fragment = document.createRange().createContextualFragment(html);
-    fragment.querySelector('.todo-remove-btn').addEventListener('click', onRemoveBtnClick);
-    fragment.querySelector('.todo-edit-btn').addEventListener('click', onEditBtnClick);
+    const todoItem = document.createRange().createContextualFragment(html).firstElementChild;
+    todoItem.querySelector('.todo-edit-btn').addEventListener('click', onEditBtnClick);
+    todoItem.querySelector('.todo-done-btn').addEventListener('click', onDoneBtnClick);
 
-    return fragment.firstElementChild;
+    if (todo.isDone) {
+        todoItem.classList.add('list-group-item-dark');
+        const doneBtn = todoItem.querySelector('.todo-done-btn');
+        doneBtn.textContent = 'Not Done';
+        doneBtn.classList.replace('btn-success', 'btn-secondary');
+    }
+
+    return todoItem;
 }
 
 let todos = [];
@@ -50,6 +58,17 @@ function getTodoFromListItem(item) {
     const id = Number(item.dataset.id);
     const todo = todos.find(todo => todo.id == id);
     return todo;
+}
+
+function onDoneBtnClick(e) {
+    e.preventDefault();
+    const srcItem = e.target.closest('[data-id]');
+
+    const todo = getTodoFromListItem(srcItem);
+    todo.isDone = todo.isDone ? false : true;
+    updateTodos();
+    const newItem = createTodoItem(todo);
+    srcItem.replaceWith(newItem);
 }
 
 function onRemoveBtnClick(e) {
@@ -65,6 +84,7 @@ function onRemoveBtnClick(e) {
 }
 
 function onEditBtnClick(e) {
+    e.preventDefault();
     const srcItem = e.target.closest('[data-id]');
 
     const todo = getTodoFromListItem(srcItem);
@@ -99,6 +119,7 @@ function onAddBtnClick(e) {
     const newTodo = {
         id: Number(Date.now().toString().slice(-10)),
         text: todoTextForm.value,
+        isDone: false,
         date: new Date().toString(),
     };
     todos.push(newTodo);
