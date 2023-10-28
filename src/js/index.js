@@ -110,11 +110,11 @@ function onEditBtnClick(e) {
     });
 
     srcItem.replaceWith(editForm);
-    console.log(todos);
 }
 
 function onAddBtnClick(e) {
     e.preventDefault();
+    if (!todoTextForm.value.trim()) return;
 
     const newTodo = {
         id: Number(Date.now().toString().slice(-10)),
@@ -128,7 +128,6 @@ function onAddBtnClick(e) {
     addToTodoListHTML(newTodo);
 
     todoAddForm.reset();
-    console.log(todos);
 }
 
 function updateTodos() {
