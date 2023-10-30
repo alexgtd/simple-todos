@@ -39,6 +39,7 @@ function createTodoItem(todo) {
         </a>`;
 
     const todoItem = document.createRange().createContextualFragment(html).firstElementChild;
+    todoItem.addEventListener('click', onTodoItemClick);
     todoItem.querySelector('.todo-item__edit-btn').addEventListener('click', onEditBtnClick);
     const doneBtn = todoItem.querySelector('.todo-item__done-btn');
     doneBtn.addEventListener('click', onDoneBtnClick);
@@ -60,19 +61,69 @@ function getTodoFromListItem(item) {
     return todo;
 }
 
-function onDoneBtnClick(e) {
+const editButtons = document.querySelector('.todo-list__edit-buttons');
+const selectedNumber = document.querySelector('.todo-list__selected-number');
+const selectedTodoListRemoveBtn = document.querySelector('.selected-todo-list__remove-btn');
+const selectedTodoListDoneBtn = document.querySelector('.selected-todo-list__done-btn');
+
+selectedTodoListDoneBtn.addEventListener('click', () => {
+    Array.from(todoList.querySelectorAll('[data-id]'))
+        .filter((el) => el.classList.contains('active'))
+        .forEach((el) => setTodoAsDone(el));
+    editButtons.classList.add('invisible');
+});
+
+selectedTodoListRemoveBtn.addEventListener('click', () => {
+    Array.from(todoList.querySelectorAll('[data-id]'))
+        .filter((el) => el.classList.contains('active'))
+        .forEach((el) => removeTodo(el));
+    editButtons.classList.add('invisible');
+});
+
+/**
+ * 
+ * @param {Event} e 
+ */
+function onTodoItemClick(e) {
     e.preventDefault();
-    const srcItem = e.target.closest('[data-id]');
+
+    e.currentTarget.classList.toggle('active');
+    const selectedItems = Array.from(todoList.querySelectorAll('[data-id]'))
+        .filter((el) => el.classList.contains('active'));
+
+    editButtons.classList.toggle('invisible', !(selectedItems.length > 1));
+    selectedNumber.textContent = selectedItems.length;
+}
+
+/**
+ * 
+ * @param {HTMLElement} todoItemHTMLContainer 
+ */
+function setTodoAsDone(todoItemHTMLContainer) {
+    const srcItem = todoItemHTMLContainer.closest('[data-id]');
 
     const todo = getTodoFromListItem(srcItem);
-    todo.isDone = todo.isDone ? false : true;
+    todo.isDone = !todo.isDone;
     updateTodos();
     const newItem = createTodoItem(todo);
     srcItem.replaceWith(newItem);
 }
 
-function onRemoveBtnClick(e) {
-    const containerElement = e.target.closest('[data-id]');
+/**
+ * 
+ * @param {Event} e 
+ */
+function onDoneBtnClick(e) {
+    e.preventDefault();
+    setTodoAsDone(e.currentTarget);
+}
+
+/**
+ * 
+ * @param {HTMLElement} todoItemHTMLContainer 
+ */
+function removeTodo(todoItemHTMLContainer) {
+    const containerElement = todoItemHTMLContainer.closest('[data-id]');
     const id = Number(containerElement.dataset.id);
     const i = todos.findIndex((todo) => todo.id === id);
     if (i === -1) {
@@ -106,7 +157,7 @@ function onEditBtnClick(e) {
     });
     editForm.querySelector('.todo-edit-form__remove-btn').addEventListener('click', (e) => {
         e.preventDefault();
-        onRemoveBtnClick(e);
+        removeTodo(e.currentTarget);
     });
 
     srcItem.replaceWith(editForm);

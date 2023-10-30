@@ -18,6 +18,14 @@
 
                 <main class="container-md">
                     <h1>Your todos:</h1>
+                    
+                    <div class="p-2 border rounded bg-body-secondary sticky-top todo-list__edit-buttons d-flex align-items-center justify-content-between mb-1 invisible">
+                        <p class="mb-0 ms-3 fs-4"><span class="todo-list__selected-number"></span> selected</p>
+                        <div class="d-flex gap-2">
+                            <button class="selected-todo-list__done-btn btn btn-success">Check as done</button>
+                            <button class="selected-todo-list__remove-btn btn btn-danger">Delete</button>
+                        </div>
+                    </div>
 
                     <div id="todo-list" class="list-group mb-3">
                     </div>
