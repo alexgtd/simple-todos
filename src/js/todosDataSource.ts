@@ -1,13 +1,15 @@
+import Todo from "./model";
+
 const todosDataSource = {
 
-    updateAll(todos) {
+    updateAll(todos: Todo[]) {
         localStorage.setItem('todos', JSON.stringify(todos));
     },
 
-    getAll() {
+    getAll(): Todo[] {
         const localTodos = localStorage.getItem('todos');
         if (!localTodos)
-            return;
+            return [];
 
         return JSON.parse(localTodos);
     }

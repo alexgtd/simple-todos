@@ -7,32 +7,32 @@ class TodoListView extends EventTarget {
     #selectedTodoListRemoveBtn = document.querySelector('.selected-todo-list__remove-btn');
     #selectedTodoListDoneBtn = document.querySelector('.selected-todo-list__done-btn');
 
-    #todoTextForm = document.getElementById('todo-add-form__textarea');
-    #todoAddForm = document.getElementById('todo-add-form');
+    #todoTextForm = document.querySelector<HTMLTextAreaElement>('#todo-add-form__textarea');
+    #todoAddForm = document.querySelector<HTMLFormElement>('#todo-add-form');
 
-    #todos = [];
+    #todos: Todo[] = [];
 
     constructor() {
         super();
-        this.#todoAddForm.addEventListener('submit', this.#onAddBtnClick.bind(this));
+        this.#todoAddForm?.addEventListener('submit', this.#onAddBtnClick.bind(this));
 
-        this.#selectedTodoListDoneBtn.addEventListener('click', () => {
-            Array.from(this.#todoList.querySelectorAll('[data-id]'))
+        this.#selectedTodoListDoneBtn?.addEventListener('click', () => {
+            Array.from(this.#todoList!.querySelectorAll('[data-id]'))
                 .filter((el) => el.classList.contains('active'))
                 .forEach((el) => this.#setTodoAsDone(el));
-            this.#editButtons.classList.add('invisible');
+            this.#editButtons?.classList.add('invisible');
         });
 
-        this.#selectedTodoListRemoveBtn.addEventListener('click', () => {
-            Array.from(this.#todoList.querySelectorAll('[data-id]'))
+        this.#selectedTodoListRemoveBtn?.addEventListener('click', () => {
+            Array.from(this.#todoList!.querySelectorAll('[data-id]'))
                 .filter((el) => el.classList.contains('active'))
-                .forEach((el) => this.#removeTodo(el));
-            this.#editButtons.classList.add('invisible');
+                .forEach((el) => this.#removeTodo(el as HTMLElement));
+            this.#editButtons?.classList.add('invisible');
         });
 
     }
 
-    #createTodoItem(todo) {
+    #createTodoItem(todo: Todo): HTMLElement {
         let text = todo.isDone ? `<s>${todo.text}</s>` : todo.text;
         let html = `
             <a href="#" data-id="${todo.id}" class="list-group-item list-group-item-action">
@@ -49,10 +49,10 @@ class TodoListView extends EventTarget {
                 </div>
             </a>`;
 
-        const todoItem = document.createRange().createContextualFragment(html).firstElementChild;
+        const todoItem = document.createRange().createContextualFragment(html).firstElementChild as HTMLElement;
         todoItem.addEventListener('click', this.#onTodoItemClick.bind(this));
-        todoItem.querySelector('.todo-item__edit-btn').addEventListener('click', this.#onEditBtnClick.bind(this));
-        const doneBtn = todoItem.querySelector('.todo-item__done-btn');
+        todoItem.querySelector('.todo-item__edit-btn')?.addEventListener('click', this.#onEditBtnClick.bind(this));
+        const doneBtn = todoItem.querySelector('.todo-item__done-btn') as HTMLElement;
         doneBtn.addEventListener('click', this.#onDoneBtnClick.bind(this));
 
         if (todo.isDone) {
@@ -64,27 +64,23 @@ class TodoListView extends EventTarget {
         return todoItem;
     }
 
-    /**
-     * 
-     * @param {Event} e 
-     */
-    #onTodoItemClick(e) {
+    #onTodoItemClick(e: Event) {
         e.preventDefault();
 
-        e.currentTarget.classList.toggle('active');
-        const selectedItems = Array.from(this.#todoList.querySelectorAll('[data-id]'))
+        (e.currentTarget as HTMLElement).classList.toggle('active');
+        const selectedItems = Array.from(this.#todoList!.querySelectorAll('[data-id]'))
             .filter((el) => el.classList.contains('active'));
 
-        this.#editButtons.classList.toggle('invisible', !(selectedItems.length > 1));
-        this.#selectedNumber.textContent = selectedItems.length;
+        this.#editButtons?.classList.toggle('invisible', !(selectedItems.length > 1));
+        this.#selectedNumber!.textContent = selectedItems.length.toString();
     }
 
-    #addToTodoListHTML(todo) {
+    #addToTodoListHTML(todo: Todo) {
         const item = this.#createTodoItem(todo);
-        this.#todoList.prepend(item);
+        this.#todoList?.prepend(item);
     }
 
-    #createTodoEditForm() {
+    #createTodoEditForm(): HTMLElement {
         let html = `
         <form name="todoEditForm" class="p-0 list-group-item">
             <div class="py-2 bg-body-secondary d-flex justify-content-between">
@@ -98,94 +94,82 @@ class TodoListView extends EventTarget {
         </form>
         `;
         const fragment = document.createRange().createContextualFragment(html);
-        return fragment.firstElementChild;
+        return fragment.firstElementChild as HTMLElement;
     }
 
-    #getTodoFromListItem(item) {
+    #getTodoFromListItem(item: HTMLElement): Todo | undefined {
         const id = Number(item.dataset.id);
         const todo = this.#todos.find(todo => todo.id == id);
         return todo;
     }
 
-    /**
-     * @param {HTMLElement} todoItemHTMLContainer 
-     */
-    #setTodoAsDone(todoItemHTMLContainer) {
+    #setTodoAsDone(todoItemHTMLContainer: Element) {
         const srcItem = todoItemHTMLContainer.closest('[data-id]');
-        const srcTodo = this.#getTodoFromListItem(srcItem);
+        const srcTodo = this.#getTodoFromListItem(srcItem as HTMLElement);
 
-        const event = new Event('onUpdate');
-        event.todo = new Todo({ ...srcTodo, isDone: !srcTodo.isDone });
+        const event: any = new Event('onUpdate');
+        event.todo = new Todo({ ...srcTodo, isDone: !srcTodo?.isDone });
         this.dispatchEvent(event);
     }
 
-    /**
-     * @param {Event} e 
-     */
-    #onDoneBtnClick(e) {
+    #onDoneBtnClick(e: Event) {
         e.preventDefault();
-        this.#setTodoAsDone(e.currentTarget);
+        this.#setTodoAsDone(e.currentTarget as Element);
     }
 
-    /**
-     * @param {HTMLElement} todoItemHTMLContainer 
-     */
-    #removeTodo(todoItemHTMLContainer) {
-        const containerElement = todoItemHTMLContainer.closest('[data-id]');
+    #removeTodo(todoItemHTMLContainer: HTMLElement) {
+        const containerElement = todoItemHTMLContainer.closest('[data-id]') as HTMLElement;
         const id = Number(containerElement.dataset.id);
         const i = this.#todos.findIndex((todo) => todo.id === id);
         if (i === -1) {
             throw new Error(`Couldn't find todo item with id: ${id}`);
         }
 
-        const event = new Event('onRemove');
+        const event: any = new Event('onRemove');
         event.todo = this.#getTodoFromListItem(containerElement);
         this.dispatchEvent(event);
     }
 
-    /**
-     * @param {Event} e 
-     */
-    #onEditBtnClick(e) {
+    #onEditBtnClick(e: Event) {
         e.preventDefault();
-        const srcItem = e.target.closest('[data-id]');
+        const srcItem = (e.target as HTMLElement).closest('[data-id]') as HTMLElement;
 
         const srcTodo = this.#getTodoFromListItem(srcItem);
         const editForm = this.#createTodoEditForm();
         editForm.dataset.id = srcItem.dataset.id;
-        const formTextArea = editForm.querySelector('textarea');
-        formTextArea.value = srcTodo.text;
+        const formTextArea = editForm.querySelector('textarea') as HTMLTextAreaElement;
+        formTextArea.value = srcTodo!.text;
 
-        editForm.querySelector('.todo-edit-form__save-btn').addEventListener('click', (e) => {
+        editForm.querySelector('.todo-edit-form__save-btn')?.addEventListener('click', (e) => {
             e.preventDefault();
-            const event = new Event('onUpdate');
+            const event: any = new Event('onUpdate');
             event.todo = new Todo({ ...srcTodo, text: formTextArea.value });
             this.dispatchEvent(event);
         });
-        editForm.querySelector('.todo-edit-form__close-btn').addEventListener('click', (e) => {
+        editForm.querySelector('.todo-edit-form__close-btn')?.addEventListener('click', (e) => {
             e.preventDefault();
             editForm.replaceWith(srcItem);
         });
-        editForm.querySelector('.todo-edit-form__remove-btn').addEventListener('click', (e) => {
+        editForm.querySelector('.todo-edit-form__remove-btn')?.addEventListener('click', (e) => {
             e.preventDefault();
-            this.#removeTodo(e.currentTarget);
+            this.#removeTodo(e.currentTarget as HTMLElement);
         });
 
         srcItem.replaceWith(editForm);
     }
 
-    #onAddBtnClick(e) {
+    #onAddBtnClick(e: Event) {
         e.preventDefault();
-        if (!this.#todoTextForm.value.trim()) return;
+        if (!this.#todoTextForm?.value.trim()) return;
 
-        const event = new Event('onCreate');
+        const event: any = new Event('onCreate');
         event.text = this.#todoTextForm.value;
         this.dispatchEvent(event);
-        this.#todoAddForm.reset();
+        this.#todoAddForm?.reset();
     }
 
-    showTodos(todos) {
-        this.#todoList.querySelectorAll('[data-id]')
+    showTodos(todos: Todo[]) {
+        this.#todoList?.querySelectorAll('[data-id]')
             .forEach((el) => el.remove());
         this.#todos = todos;
         todos.forEach(todo => {
